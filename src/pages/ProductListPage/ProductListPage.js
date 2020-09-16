@@ -2,28 +2,27 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ProductItem from '../../components/ProductItem/ProductItem';
 import ProductList from '../../components/ProductList/ProductList';
-import axios from 'axios';
+import callApi from './../../utils/apiCaller'
 
 class ProductListPage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            products: []
+        };
+    }
 
+    componentDidMount() {
+        callApi('products', 'GET', null).then(res => {
+            this.setState({
+                products: res.data
+            });
+        });
     }
 
     render() {
-        var products = [];
-        axios({
-            method: 'GET',
-            url: 'https://5f6037bc90cf8d0016557673.mockapi.io/api/products',
-            data: null
-        }).then(res => {
-            console.log(res);
-            products = res.data;
-        }).catch(err => {
-            console.log(err);
-        });
+        var { products } = this.state;
 
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
