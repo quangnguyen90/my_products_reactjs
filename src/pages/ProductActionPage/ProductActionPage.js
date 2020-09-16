@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import callApi from '../../utils/apiCaller';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { actAddProductRequest } from '../../actions';
+import { actAddProductRequest, actGetProductRequest } from '../../actions';
+import callApi from '../../utils/apiCaller';
 
 class ProductActionPage extends Component {
     constructor(props) {
@@ -16,21 +16,41 @@ class ProductActionPage extends Component {
         };
 
     }
+
     componentDidMount() {
-        var {match} = this.props;
+        var { match } = this.props;
         if (match) {
             var id = match.params.id;
-            callApi(`products/${id}`, 'GET', null).then(res => {
-                var data = res.data;
-                this.setState({
-                    id: data.id,
-                    txtName: data.name,
-                    txtPrice: data.price,
-                    chkbStatus: data.status
-                })
-            });
+            this.props.onEditProduct(id);
         }
     }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps && nextProps.match) {
+            var { itemEditing } = nextProps;
+            return {
+                id: itemEditing.id,
+                txtName: itemEditing.name,
+                txtPrice: itemEditing.price,
+                chkbStatus: itemEditing.status
+            };
+        }
+        else return null;
+    }
+
+    // For old version. Now replace by function getDerivedStateFromProps
+    // Install: npx react-codemod rename-unsafe-lifecycles
+    // UNSAFE_componentWillReceiveProps(nextProps) {
+    //     if (nextProps && nextProps.itemEditing) {
+    //         var { itemEditing } = nextProps;
+    //         this.setState({
+    //             id: itemEditing.id,
+    //             txtName: itemEditing.name,
+    //             txtPrice: itemEditing.price,
+    //             chkbStatus: itemEditing.status
+    //         });
+    //     }
+    // }
 
     onChange = (e) => {
         var target = e.target;
@@ -43,7 +63,7 @@ class ProductActionPage extends Component {
 
     onSave = (e) => {
         e.preventDefault();
-        var { id, txtName, txtPrice, chkbStatus} = this.state;
+        var { id, txtName, txtPrice, chkbStatus } = this.state;
         var { history } = this.props;
         var product = {
             id: id,
@@ -66,7 +86,7 @@ class ProductActionPage extends Component {
     }
 
     render() {
-        var {txtName, txtPrice, chkbStatus} = this.state;
+        var { txtName, txtPrice, chkbStatus } = this.state;
         return (
             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <form onSubmit={this.onSave}>
@@ -76,7 +96,7 @@ class ProductActionPage extends Component {
                             type="text"
                             className="form-control"
                             name="txtName"
-                            value={txtName}
+                            value={txtName || ""}
                             onChange={this.onChange}
                         />
                     </div>
@@ -86,7 +106,7 @@ class ProductActionPage extends Component {
                             type="text"
                             className="form-control"
                             name="txtPrice"
-                            value={txtPrice}
+                            value={txtPrice || ""}
                             onChange={this.onChange}
                         />
                     </div>
@@ -99,7 +119,7 @@ class ProductActionPage extends Component {
                                 type="checkbox"
                                 name="chkbStatus"
                                 value={chkbStatus}
-                                checked={chkbStatus}
+                                checked={chkbStatus || false}
                                 onChange={this.onChange}
                             />
                             On Sell
@@ -119,7 +139,7 @@ ProductActionPage.propTypes = {
 
 const mapStateToProps = state => {
     return {
-        
+        itemEditing: state.itemEditing
     }
 }
 
@@ -127,7 +147,10 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         onAddProduct: (product) => {
             dispatch(actAddProductRequest(product));
-        }
+        },
+        onEditProduct: (id) => {
+            dispatch(actGetProductRequest(id));
+        },
     }
 }
 
