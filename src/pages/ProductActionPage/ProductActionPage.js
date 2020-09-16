@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { actAddProductRequest, actGetProductRequest } from '../../actions';
-import callApi from '../../utils/apiCaller';
+import { actAddProductRequest, actGetProductRequest, actUpdateProductRequest } from '../../actions';
 
 class ProductActionPage extends Component {
     constructor(props) {
@@ -25,32 +24,32 @@ class ProductActionPage extends Component {
         }
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps && nextProps.match) {
-            var { itemEditing } = nextProps;
-            return {
-                id: itemEditing.id,
-                txtName: itemEditing.name,
-                txtPrice: itemEditing.price,
-                chkbStatus: itemEditing.status
-            };
-        }
-        else return null;
-    }
-
-    // For old version. Now replace by function getDerivedStateFromProps
-    // Install: npx react-codemod rename-unsafe-lifecycles
-    // UNSAFE_componentWillReceiveProps(nextProps) {
-    //     if (nextProps && nextProps.itemEditing) {
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //     if (nextProps && nextProps.match) {
     //         var { itemEditing } = nextProps;
-    //         this.setState({
+    //         return {
     //             id: itemEditing.id,
     //             txtName: itemEditing.name,
     //             txtPrice: itemEditing.price,
     //             chkbStatus: itemEditing.status
-    //         });
+    //         };
     //     }
+    //     else return null;
     // }
+
+    // For old version. Now replace by function getDerivedStateFromProps
+    // Install: npx react-codemod rename-unsafe-lifecycles
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps && nextProps.itemEditing) {
+            var { itemEditing } = nextProps;
+            this.setState({
+                id: itemEditing.id,
+                txtName: itemEditing.name,
+                txtPrice: itemEditing.price,
+                chkbStatus: itemEditing.status
+            });
+        }
+    }
 
     onChange = (e) => {
         var target = e.target;
@@ -72,13 +71,8 @@ class ProductActionPage extends Component {
             status: chkbStatus
         };
         if (id) {
-            callApi(`products/${id}`, 'PUT', {
-                name: txtName,
-                price: txtPrice,
-                status: chkbStatus
-            }).then(res => {
-                history.goBack();
-            });
+            this.props.onUpdateProduct(product);
+            history.goBack();
         } else {
             this.props.onAddProduct(product);
             history.goBack();
@@ -151,6 +145,9 @@ const mapDispatchToProps = (dispatch, props) => {
         onEditProduct: (id) => {
             dispatch(actGetProductRequest(id));
         },
+        onUpdateProduct: (product) => {
+            dispatch(actUpdateProductRequest(product));
+        }
     }
 }
 

@@ -2,21 +2,33 @@
   "products": [
     {
       "id": 1,
-      "name": "IPhone",
+      "name": "Iphone 10",
       "price": 500,
       "status": true
     },
     {
+      "id": 2,
       "name": "Samsung",
       "price": "100",
-      "status": true,
-      "id": 2
+      "status": true
     },
     {
+      "id": 3,
       "name": "Toyota",
       "price": "200",
-      "status": true,
-      "id": 3
+      "status": false
+    },
+    {
+      "id": 4,
+      "name": "Guitar",
+      "price": "100",
+      "status": true
+    },
+    {
+      "id": 5,
+      "name": "Piano",
+      "price": "300",
+      "status": true
     }
   ]
 }

@@ -1,11 +1,6 @@
 import * as Types from '../constants/ActionTypes';
 
-var initialState = {
-    id: '',
-    txtName: '',
-    txtPrice: '',
-    chkbStatus: '',
-};
+var initialState = {};
 
 const itemEditing = (state = initialState, action) => {
     switch (action.type) {
