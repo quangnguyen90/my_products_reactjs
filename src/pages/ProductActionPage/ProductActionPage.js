@@ -14,6 +14,21 @@ class ProductActionPage extends Component {
         };
 
     }
+    componentDidMount() {
+        var {match} = this.props;
+        if (match) {
+            var id = match.params.id;
+            callApi(`products/${id}`, 'GET', null).then(res => {
+                var data = res.data;
+                this.setState({
+                    id: data.id,
+                    txtName: data.name,
+                    txtPrice: data.price,
+                    chkbStatus: data.status
+                })
+            });
+        }
+    }
 
     onChange = (e) => {
         var target = e.target;
@@ -71,6 +86,7 @@ class ProductActionPage extends Component {
                                 type="checkbox"
                                 name="chkbStatus"
                                 value={chkbStatus}
+                                checked={chkbStatus}
                                 onChange={this.onChange}
                             />
                             On Sell
