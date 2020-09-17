@@ -12,6 +12,7 @@ class ProductActionPage extends Component {
             txtName: '',
             txtPrice: '',
             chkbStatus: '',
+            lastEditing: null
         };
 
     }
@@ -24,32 +25,33 @@ class ProductActionPage extends Component {
         }
     }
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //     if (nextProps && nextProps.match) {
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps && nextProps.match && nextProps.itemEditing !== prevState.lastEditing) {
+            var { itemEditing } = nextProps;
+            return {
+                id: itemEditing.id,
+                txtName: itemEditing.name,
+                txtPrice: itemEditing.price,
+                chkbStatus: itemEditing.status,
+                lastEditing: itemEditing
+            };
+        }
+        return null;
+    }
+
+    // For old version. Now replace by function getDerivedStateFromProps
+    // Install: npx react-codemod rename-unsafe-lifecycles
+    // UNSAFE_componentWillReceiveProps(nextProps) {
+    //     if (nextProps && nextProps.itemEditing) {
     //         var { itemEditing } = nextProps;
-    //         return {
+    //         this.setState({
     //             id: itemEditing.id,
     //             txtName: itemEditing.name,
     //             txtPrice: itemEditing.price,
     //             chkbStatus: itemEditing.status
-    //         };
+    //         });
     //     }
-    //     else return null;
     // }
-
-    // For old version. Now replace by function getDerivedStateFromProps
-    // Install: npx react-codemod rename-unsafe-lifecycles
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps && nextProps.itemEditing) {
-            var { itemEditing } = nextProps;
-            this.setState({
-                id: itemEditing.id,
-                txtName: itemEditing.name,
-                txtPrice: itemEditing.price,
-                chkbStatus: itemEditing.status
-            });
-        }
-    }
 
     onChange = (e) => {
         var target = e.target;
@@ -113,7 +115,7 @@ class ProductActionPage extends Component {
                                 type="checkbox"
                                 name="chkbStatus"
                                 value={chkbStatus}
-                                checked={chkbStatus || false}
+                                checked={!!chkbStatus}
                                 onChange={this.onChange}
                             />
                             On Sell
